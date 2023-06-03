@@ -31,7 +31,7 @@ enviarGasto.addEventListener("click", () => {
     saldoRestante = parseInt(presupuestoInput.value) - totalGastos;
     document.getElementById("cantidadBalance").textContent = Math.max(0, saldoRestante);
 
-    // Limpiar los campos gastoInput y cantidadInput
+    
     gastoInput.value = "";
     cantidadInput.value = "";
 
@@ -44,11 +44,10 @@ enviarGasto.addEventListener("click", () => {
 
             gastoRow.remove();
 
-            // Actualizar el total de gastos al eliminar un gasto
+            
             totalGastos -= gastoValue;
             document.getElementById("cantidadGasto").textContent = Math.max(0, parseInt(totalGastos));
 
-            // Actualizar el saldo restante al eliminar un gasto
             saldoRestante = parseInt(presupuestoInput.value) - totalGastos;
             document.getElementById("cantidadBalance").textContent = Math.max(0, saldoRestante);
         });
