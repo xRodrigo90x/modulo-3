@@ -13,15 +13,44 @@ enviarPresupuesto.addEventListener("click", () => {
 });
 
 
+let totalGastos = 0;
+let saldoRestante = 0;
+
 enviarGasto.addEventListener("click", () => {
-    
-    tbody.innerHTML = `
-    <zt
-        <tr>
-            <th scope="row">${gastoInput.value}</th>
-            <td>${cantidadInput.value}</td>
-            <td><button  class="bi bi-trash"></button></td>
-        </tr>
-    </ztr>
-        `                       
+    tbody.innerHTML += `
+    <tr>
+        <td>${gastoInput.value}</td>
+        <td>${cantidadInput.value}</td>
+        <td><button class="bi bi-trash basurero"></button></td>
+    </tr>
+    `;
+
+    totalGastos += parseFloat(cantidadInput.value);
+    document.getElementById("cantidadGasto").textContent = Math.max(0, parseInt(totalGastos));
+
+    saldoRestante = parseInt(presupuestoInput.value) - totalGastos;
+    document.getElementById("cantidadBalance").textContent = Math.max(0, saldoRestante);
+
+    // Limpiar los campos gastoInput y cantidadInput
+    gastoInput.value = "";
+    cantidadInput.value = "";
+
+    let basureros = Array.from(document.getElementsByClassName("basurero"));
+
+    basureros.forEach((basurero) => {
+        basurero.addEventListener("click", () => {
+            let gastoRow = basurero.parentNode.parentNode;
+            let gastoValue = parseFloat(gastoRow.children[1].textContent);
+
+            gastoRow.remove();
+
+            // Actualizar el total de gastos al eliminar un gasto
+            totalGastos -= gastoValue;
+            document.getElementById("cantidadGasto").textContent = Math.max(0, parseInt(totalGastos));
+
+            // Actualizar el saldo restante al eliminar un gasto
+            saldoRestante = parseInt(presupuestoInput.value) - totalGastos;
+            document.getElementById("cantidadBalance").textContent = Math.max(0, saldoRestante);
+        });
+    });
 });
