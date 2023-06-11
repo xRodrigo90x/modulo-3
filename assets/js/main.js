@@ -5,51 +5,60 @@ let cantidadBalance = document.getElementById("cantidadBalance");
 let gastoInput = document.getElementById("gastoInput");
 let cantidadInput = document.getElementById("cantidadInput");
 let enviarGasto = document.getElementById("enviarGasto");
+let tbody = document.getElementById("tbody");
+let gastosArray = [];
 
 enviarPresupuesto.addEventListener("click", () => {
-
-    cantidadPresupuesto.innerText = presupuestoInput.value
-    cantidadBalance.innerHTML = presupuestoInput.value
+    cantidadPresupuesto.innerText = presupuestoInput.value;
+    cantidadBalance.innerHTML = presupuestoInput.value;
 });
-
-
-let totalGastos = 0;
-let saldoRestante = 0;
 
 enviarGasto.addEventListener("click", () => {
-    tbody.innerHTML += `
-    <tr>
-        <td>${gastoInput.value}</td>
-        <td>${cantidadInput.value}</td>
-        <td><button class="bi bi-trash basurero"></button></td>
-    </tr>
-    `;
+    let gasto = gastoInput.value;
+    let cantidad = parseFloat(cantidadInput.value);
 
-    totalGastos += parseFloat(cantidadInput.value);
-    document.getElementById("cantidadGasto").textContent = Math.max(0, parseInt(totalGastos));
+    if (gasto && cantidad) {
+        gastosArray.push({ gasto, cantidad });
 
-    saldoRestante = parseInt(presupuestoInput.value) - totalGastos;
-    document.getElementById("cantidadBalance").textContent = Math.max(0, saldoRestante);
-
-    
-    gastoInput.value = "";
-    cantidadInput.value = "";
-
-    let basureros = Array.from(document.getElementsByClassName("basurero"));
-
-    basureros.forEach((basurero) => {
+        let fila = document.createElement("tr");
+        let columnaGasto = document.createElement("td");
+        columnaGasto.textContent = gasto;
+        let columnaCantidad = document.createElement("td");
+        columnaCantidad.textContent = cantidad;
+        let columnaBasurero = document.createElement("td");
+        let basurero = document.createElement("button");
+        basurero.classList.add("bi", "bi-trash", "basurero");
         basurero.addEventListener("click", () => {
-            let gastoRow = basurero.parentNode.parentNode;
-            let gastoValue = parseFloat(gastoRow.children[1].textContent);
-
-            gastoRow.remove();
-
-            
-            totalGastos -= gastoValue;
-            document.getElementById("cantidadGasto").textContent = Math.max(0, parseInt(totalGastos));
-
-            saldoRestante = parseInt(presupuestoInput.value) - totalGastos;
-            document.getElementById("cantidadBalance").textContent = Math.max(0, saldoRestante);
+            eliminarGasto(fila);
         });
-    });
+
+        columnaBasurero.appendChild(basurero);
+        fila.appendChild(columnaGasto);
+        fila.appendChild(columnaCantidad);
+        fila.appendChild(columnaBasurero);
+        tbody.appendChild(fila);
+
+        actualizarTotales();
+        gastoInput.value = "";
+        cantidadInput.value = "";
+    }
 });
+
+function actualizarTotales() {
+    let totalGastos = 0;
+    gastosArray.forEach((gasto) => {
+        totalGastos += gasto.cantidad;
+    });
+    document.getElementById("cantidadGasto").textContent = totalGastos;
+
+    let saldoRestante = parseInt(presupuestoInput.value) - totalGastos;
+    document.getElementById("cantidadBalance").textContent = Math.max(0, saldoRestante);
+}
+
+function eliminarGasto(fila) {
+    let index = Array.from(tbody.children).indexOf(fila);
+    gastosArray.splice(index, 1);
+    tbody.removeChild(fila);
+
+    actualizarTotales();
+}
